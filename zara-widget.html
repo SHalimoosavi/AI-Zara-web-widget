@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Zara Widget – SAYANJALI NEXUS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    /* ── RESET ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── DEMO PAGE (remove this block if embedding only the widget) ── */
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%);
+      font-family: 'DM Sans', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1a1a2e;
+    }
+    .demo-center {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .demo-center h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(22px, 5vw, 36px);
+      font-weight: 800;
+      color: #0d0d1a;
+      letter-spacing: -0.5px;
+    }
+    .demo-center p {
+      margin-top: 10px;
+      color: rgba(0,0,0,0.4);
+      font-size: 14px;
+    }
+    .demo-arrow {
+      margin-top: 30px;
+      font-size: 13px;
+      color: rgba(0,0,0,0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    /* ══════════════════════════════════════════
+       ZARA WIDGET  –  Copy everything below
+       into your GitHub Pages HTML file
+    ══════════════════════════════════════════ */
+
+    /* ── Launcher bubble ── */
+    #zara-launcher {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 9999;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+    }
+
+    #zara-bubble {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0d0d1a, #1a1a3e);
+      border: 2px solid rgba(0,212,255,0.5);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.35), 0 0 0 0 rgba(0,212,255,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), box-shadow 0.3s;
+      animation: bubble-glow 3s ease-in-out infinite;
+      user-select: none;
+    }
+    #zara-bubble:hover {
+      transform: scale(1.1);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 30px rgba(0,212,255,0.3);
+    }
+    #zara-bubble.open { transform: scale(0.9) rotate(10deg); }
+
+    @keyframes bubble-glow {
+      0%,100% { box-shadow: 0 8px 32px rgba(0,0,0,0.35), 0 0 0 0 rgba(0,212,255,0.4); }
+      50%      { box-shadow: 0 8px 32px rgba(0,0,0,0.35), 0 0 0 10px rgba(0,212,255,0); }
+    }
+
+    #zara-pill {
+      background: #0d0d1a;
+      color: #00d4ff;
+      font-size: 11px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(0,212,255,0.25);
+      white-space: nowrap;
+      animation: pill-fadein 1s ease 1.5s both;
+      pointer-events: none;
+    }
+    @keyframes pill-fadein {
+      from { opacity:0; transform: translateY(6px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+
+    /* ── Chat panel ── */
+    #zara-panel {
+      position: fixed;
+      bottom: 108px;
+      right: 28px;
+      z-index: 9998;
+      width: 370px;
+      max-width: calc(100vw - 36px);
+      height: 520px;
+      max-height: calc(100vh - 130px);
+      background: #0a0a12;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 28px 80px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.05);
+      transform: scale(0.88) translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      transform-origin: bottom right;
+      transition: transform 0.3s cubic-bezier(.34,1.56,.64,1), opacity 0.25s ease;
+    }
+    #zara-panel.visible {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* Panel header */
+    #zara-header {
+      padding: 14px 16px 12px;
+      background: linear-gradient(180deg, rgba(0,212,255,0.06) 0%, transparent 100%);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    #zara-avatar-wrap {
+      position: relative;
+      flex-shrink: 0;
+    }
+    #zara-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, rgba(0,212,255,0.2), #1a1a2e);
+      border: 2px solid rgba(0,212,255,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 0 16px rgba(0,212,255,0.2);
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-4px); }
+    }
+    #zara-status-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #10b981;
+      border: 2px solid #0a0a12;
+      position: absolute; bottom: 1px; right: 1px;
+    }
+    .zara-hinfo { flex: 1; }
+    .zara-hname {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      color: #fff;
+      letter-spacing: -0.2px;
+    }
+    .zara-hsub {
+      font-size: 10px;
+      color: rgba(255,255,255,0.35);
+      margin-top: 1px;
+      letter-spacing: 0.2px;
+    }
+    #zara-state-badge {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 20px;
+      background: rgba(16,185,129,0.12);
+      color: #10b981;
+      border: 1px solid rgba(16,185,129,0.2);
+      transition: all 0.3s;
+      white-space: nowrap;
+    }
+
+    /* Messages */
+    #zara-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px 14px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      scroll-behavior: smooth;
+    }
+    #zara-messages::-webkit-scrollbar { width: 3px; }
+    #zara-messages::-webkit-scrollbar-thumb { background: #2a2a3e; border-radius: 3px; }
+
+    .zara-empty {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 20px;
+      text-align: center;
+    }
+    .zara-empty-icon { font-size: 34px; }
+    .zara-empty-title { color: rgba(255,255,255,0.6); font-size: 13px; font-weight: 500; }
+    .zara-empty-sub { color: rgba(255,255,255,0.25); font-size: 11px; line-height: 1.5; }
+    .zara-chips { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; margin-top: 4px; }
+    .zara-chip {
+      font-size: 10px; color: rgba(0,212,255,0.7);
+      border: 1px solid rgba(0,212,255,0.2);
+      padding: 3px 10px; border-radius: 20px;
+      background: rgba(0,212,255,0.04);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .zara-chip:hover { background: rgba(0,212,255,0.1); }
+
+    .zara-msg-row {
+      display: flex;
+      gap: 7px;
+      align-items: flex-end;
+      animation: msg-in 0.25s ease both;
+    }
+    .zara-msg-row.user { flex-direction: row-reverse; }
+    @keyframes msg-in {
+      from { opacity:0; transform: translateY(8px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+    .zara-mini-avatar {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: linear-gradient(135deg, rgba(0,212,255,0.15), #1a1a2e);
+      border: 1px solid rgba(0,212,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; flex-shrink: 0;
+    }
+    .zara-bubble-msg {
+      max-width: 78%;
+    }
+    .zara-bubble-text {
+      padding: 9px 13px;
+      font-size: 12.5px;
+      line-height: 1.55;
+      word-break: break-word;
+      color: rgba(255,255,255,0.88);
+    }
+    .zara-msg-row.bot  .zara-bubble-text {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px 14px 14px 3px;
+    }
+    .zara-msg-row.user .zara-bubble-text {
+      background: linear-gradient(135deg, #6d28d9, #4c1d95);
+      border-radius: 14px 14px 3px 14px;
+      color: #fff;
+    }
+    .zara-msg-row.end-msg .zara-bubble-text {
+      background: rgba(16,185,129,0.1);
+      border: 1px solid rgba(16,185,129,0.2);
+      color: rgba(255,255,255,0.8);
+    }
+    .zara-ts {
+      font-size: 9.5px;
+      color: rgba(255,255,255,0.2);
+      margin-top: 2px;
+      padding: 0 3px;
+    }
+    .zara-msg-row.user .zara-ts { text-align: right; }
+
+    /* Typing indicator */
+    #zara-typing {
+      display: none;
+      gap: 7px;
+      align-items: flex-end;
+      animation: msg-in 0.25s ease both;
+    }
+    #zara-typing.show { display: flex; }
+    .zara-typing-dots {
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 14px 14px 14px 3px;
+      display: flex; gap: 4px; align-items: center;
+    }
+    .zara-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: #f59e0b;
+      animation: dot-b 1.2s ease-in-out infinite;
+    }
+    .zara-dot:nth-child(2) { animation-delay: 0.2s; }
+    .zara-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dot-b {
+      0%,80%,100% { transform: translateY(0); opacity:0.4; }
+      40%          { transform: translateY(-5px); opacity:1; }
+    }
+
+    /* Waveform bar */
+    #zara-wave {
+      padding: 6px 14px 0;
+      display: none;
+      gap: 2px;
+      align-items: center;
+      justify-content: center;
+      height: 28px;
+      flex-shrink: 0;
+    }
+    #zara-wave.show { display: flex; }
+    .zara-bar {
+      width: 3px; border-radius: 2px;
+      background: rgba(0,212,255,0.4);
+      transition: height 0.09s ease;
+    }
+
+    /* Input area */
+    #zara-footer {
+      padding: 10px 12px 14px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      background: rgba(0,0,0,0.25);
+      flex-shrink: 0;
+    }
+    #zara-start-btn {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #00d4ff, #009dbb);
+      border: none;
+      border-radius: 12px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      color: #000;
+      cursor: pointer;
+      letter-spacing: 0.4px;
+      box-shadow: 0 6px 20px rgba(0,212,255,0.3);
+      transition: transform 0.2s, filter 0.2s;
+    }
+    #zara-start-btn:hover { transform: scale(1.02); filter: brightness(1.1); }
+
+    #zara-input-row {
+      display: none;
+      gap: 7px;
+      align-items: flex-end;
+    }
+    #zara-input-row.show { display: flex; }
+    #zara-input {
+      flex: 1;
+      padding: 10px 13px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 11px;
+      color: #fff;
+      font-size: 12.5px;
+      font-family: 'DM Sans', sans-serif;
+      resize: none;
+      line-height: 1.5;
+      transition: border-color 0.2s;
+      rows: 1;
+    }
+    #zara-input::placeholder { color: rgba(255,255,255,0.3); }
+    #zara-input:focus { outline: none; border-color: rgba(0,212,255,0.4); }
+    #zara-send-btn {
+      width: 38px; height: 38px;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #6d28d9, #4c1d95);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 15px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 14px rgba(109,40,217,0.4);
+      transition: transform 0.2s, filter 0.2s;
+    }
+    #zara-send-btn:hover { transform: scale(1.06); filter: brightness(1.15); }
+    #zara-send-btn:disabled { opacity: 0.4; cursor: default; }
+
+    #zara-end-row {
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 7px;
+    }
+    #zara-end-row.show { display: flex; }
+    .zara-hint { font-size: 9.5px; color: rgba(255,255,255,0.2); }
+    #zara-end-btn {
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 4px 12px;
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.25);
+      border-radius: 7px;
+      color: #ef4444;
+      cursor: pointer;
+      transition: background 0.2s;
+      letter-spacing: 0.2px;
+    }
+    #zara-end-btn:hover { background: rgba(239,68,68,0.18); }
+
+    /* Notification badge */
+    #zara-badge {
+      position: absolute;
+      top: -4px; right: -4px;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: #ef4444;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #f0f4ff;
+      animation: badge-pop 0.3s cubic-bezier(.34,1.56,.64,1);
+    }
+    #zara-badge.show { display: flex; }
+    @keyframes badge-pop {
+      from { transform: scale(0); }
+      to   { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ░░ DEMO PAGE CONTENT (Remove this in your GitHub site) ░░ -->
+  <div class="demo-center">
+    <h1>SAYANJALI NEXUS<br>PRIVATE LIMITED</h1>
+    <p>Your GitHub Pages website goes here.</p>
+    <div class="demo-arrow">
+      👉 &nbsp; Zara chat widget is live — bottom right corner
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════
+       ZARA WIDGET — Paste this block into your site
+  ════════════════════════════════════════════════ -->
+
+  <!-- Launcher -->
+  <div id="zara-launcher" onclick="zaraToggle()">
+    <div id="zara-pill">CHAT WITH ZARA</div>
+    <div style="position:relative">
+      <div id="zara-bubble">🤖</div>
+      <div id="zara-badge">1</div>
+    </div>
+  </div>
+
+  <!-- Chat Panel -->
+  <div id="zara-panel">
+
+    <!-- Header -->
+    <div id="zara-header">
+      <div id="zara-avatar-wrap">
+        <div id="zara-avatar">🤖</div>
+        <div id="zara-status-dot"></div>
+      </div>
+      <div class="zara-hinfo">
+        <div class="zara-hname">Zara</div>
+        <div class="zara-hsub">SAYANJALI NEXUS PRIVATE LIMITED</div>
+      </div>
+      <div id="zara-state-badge">Online</div>
+    </div>
+
+    <!-- Waveform -->
+    <div id="zara-wave">
+      <!-- bars injected by JS -->
+    </div>
+
+    <!-- Messages -->
+    <div id="zara-messages">
+      <div class="zara-empty" id="zara-empty">
+        <div class="zara-empty-icon">💬</div>
+        <div class="zara-empty-title">Talk to Zara</div>
+        <div class="zara-empty-sub">AI assistant for<br>SAYANJALI NEXUS PRIVATE LIMITED</div>
+        <div class="zara-chips">
+          <div class="zara-chip" onclick="zaraQuickMsg('I need a website')">Website Dev</div>
+          <div class="zara-chip" onclick="zaraQuickMsg('Tell me about AI solutions')">AI Solutions</div>
+          <div class="zara-chip" onclick="zaraQuickMsg('Book an appointment')">Book Appointment</div>
+          <div class="zara-chip" onclick="zaraQuickMsg('Cybersecurity services')">Cybersecurity</div>
+        </div>
+      </div>
+      <div id="zara-typing">
+        <div class="zara-mini-avatar">🤖</div>
+        <div class="zara-typing-dots">
+          <div class="zara-dot"></div>
+          <div class="zara-dot"></div>
+          <div class="zara-dot"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div id="zara-footer">
+      <button id="zara-start-btn" onclick="zaraStartChat()">🟢 &nbsp;Start Conversation</button>
+
+      <div id="zara-input-row">
+        <textarea id="zara-input" placeholder="Type your message…" rows="1"
+          oninput="zaraAutoResize(this)"
+          onkeydown="zaraKeyDown(event)"></textarea>
+        <button id="zara-send-btn" onclick="zaraSend()">➤</button>
+      </div>
+      <div id="zara-end-row">
+        <span class="zara-hint">Enter to send · Shift+Enter new line</span>
+        <button id="zara-end-btn" onclick="zaraEndChat()">✕ End Chat</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ════ WIDGET SCRIPT ════ -->
+  <script>
+  (function () {
+
+    /* ── CONFIG ── change only this section ── */
+    const ANTHROPIC_API_KEY = "YOUR_ANTHROPIC_API_KEY_HERE"; // 🔑 Replace with your key
+    const COMPANY = "SAYANJALI NEXUS PRIVATE LIMITED";
+
+    const SYSTEM_PROMPT = `You are Zara, the professional AI assistant for ${COMPANY}.
+
+PERSONALITY: Professional, polite, confident, friendly. Speak naturally. Keep responses short (2-4 sentences). Never sound robotic. Solution-oriented.
+
+SERVICES: Custom Software Development, Mobile App Development, Website Development, AI Automation, AI Chatbots, WhatsApp Automation, CRM & ERP Solutions, Hospital Management Software, SaaS Platform Development, Blockchain & Web3 Solutions, Cybersecurity Services, Digital Transformation Consulting, Business Automation, Startup Technology Consulting.
+
+RESPONSIBILITIES: Handle inquiries, qualify leads, book appointments, provide support.
+
+LEAD QUALIFICATION: Ask about service interest, individual/startup/company, problem to solve, budget range, timeline. Score as Hot (ready, budget approved, <30 days), Warm (interested, evaluating), or Cold (researching).
+
+APPOINTMENT BOOKING: Collect – Full Name, Company, Phone, Email, Service Interested In, Preferred Date & Time, Brief Requirement. Confirm all details.
+
+OBJECTIONS:
+- "expensive" → tailor to budget, ask range
+- "need to think" → offer follow-up scheduling
+
+RULES: One question at a time. Confirm key info. Simple language. Stay efficient.
+
+OPENING: "Hello! Welcome to ${COMPANY}. I'm Zara, your virtual assistant. How may I help you today?"
+CLOSING: "Thank you for reaching out to ${COMPANY}. Have a wonderful day!"`;
+    /* ── END CONFIG ── */
+
+    let panelOpen  = false;
+    let chatActive = false;
+    let isLoading  = false;
+    let unreadCount = 0;
+    let waveInterval, waveAnimating = false;
+    let chatHistory = [];   // { role, content }
+
+    const $ = id => document.getElementById(id);
+
+    /* wave bars */
+    const waveEl = $("zara-wave");
+    for (let i = 0; i < 18; i++) {
+      const b = document.createElement("div");
+      b.className = "zara-bar";
+      b.style.height = "4px";
+      waveEl.appendChild(b);
+    }
+    const waveBars = waveEl.querySelectorAll(".zara-bar");
+
+    function animateWave(color) {
+      waveBars.forEach(b => b.style.background = color || "rgba(0,212,255,0.4)");
+      waveEl.classList.add("show");
+      waveAnimating = true;
+      clearInterval(waveInterval);
+      waveInterval = setInterval(() => {
+        waveBars.forEach(b => {
+          const h = Math.random() * 22 + 3;
+          b.style.height = h + "px";
+        });
+      }, 90);
+    }
+    function stopWave() {
+      waveAnimating = false;
+      clearInterval(waveInterval);
+      waveBars.forEach(b => b.style.height = "4px");
+      waveEl.classList.remove("show");
+    }
+
+    function setBadge(n) {
+      const el = $("zara-badge");
+      if (n > 0) { el.textContent = n > 9 ? "9+" : n; el.classList.add("show"); }
+      else        { el.classList.remove("show"); }
+    }
+
+    function setStateBadge(text, color) {
+      const el = $("zara-state-badge");
+      el.textContent = text;
+      el.style.color = color;
+      el.style.background = color.replace(")", ",0.12)").replace("rgb", "rgba").replace("#", "rgba(") + "12";
+      const colors = { "#10b981": "rgba(16,185,129,0.2)", "#f59e0b": "rgba(245,158,11,0.2)", "#00d4ff": "rgba(0,212,255,0.2)", "#6d28d9": "rgba(109,40,217,0.2)" };
+      el.style.borderColor = colors[color] || "rgba(255,255,255,0.1)";
+    }
+
+    function nowTime() {
+      return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    }
+
+    function addMessage(role, text, isEnd) {
+      $("zara-empty") && ($("zara-empty").style.display = "none");
+
+      const row = document.createElement("div");
+      row.className = "zara-msg-row " + (role === "user" ? "user" : "bot") + (isEnd ? " end-msg" : "");
+
+      if (role === "assistant") {
+        const av = document.createElement("div");
+        av.className = "zara-mini-avatar"; av.textContent = "🤖";
+        row.appendChild(av);
+      }
+
+      const wrap = document.createElement("div"); wrap.className = "zara-bubble-msg";
+      const bubble = document.createElement("div"); bubble.className = "zara-bubble-text";
+      bubble.textContent = text;
+      const ts = document.createElement("div"); ts.className = "zara-ts"; ts.textContent = nowTime();
+      wrap.appendChild(bubble); wrap.appendChild(ts);
+      row.appendChild(wrap);
+
+      const msgs = $("zara-messages");
+      msgs.insertBefore(row, $("zara-typing"));
+      msgs.scrollTop = msgs.scrollHeight;
+
+      if (role === "assistant" && !panelOpen) {
+        unreadCount++;
+        setBadge(unreadCount);
+      }
+    }
+
+    function showTyping() {
+      $("zara-typing").classList.add("show");
+      $("zara-messages").scrollTop = $("zara-messages").scrollHeight;
+      animateWave("rgba(245,158,11,0.5)");
+      setStateBadge("Typing…", "#f59e0b");
+    }
+    function hideTyping() {
+      $("zara-typing").classList.remove("show");
+      stopWave();
+    }
+
+    async function callZara(userText) {
+      if (isLoading) return;
+      isLoading = true;
+
+      chatHistory.push({ role: "user", content: userText });
+      addMessage("user", userText);
+      showTyping();
+      $("zara-send-btn").disabled = true;
+
+      try {
+        const resp = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "claude-sonnet-4-20250514",
+            max_tokens: 1000,
+            system: SYSTEM_PROMPT,
+            messages: chatHistory
+          })
+        });
+        const data = await resp.json();
+        const reply = data.content?.[0]?.text || "I'm sorry, something went wrong. Please try again.";
+        chatHistory.push({ role: "assistant", content: reply });
+        hideTyping();
+        setTimeout(() => {
+          addMessage("assistant", reply);
+          animateWave("rgba(16,185,129,0.4)");
+          setStateBadge("Online", "#10b981");
+          setTimeout(stopWave, 1500);
+        }, 200);
+      } catch (e) {
+        hideTyping();
+        addMessage("assistant", "I'm having trouble connecting right now. Please try again.");
+        setStateBadge("Online", "#10b981");
+      } finally {
+        isLoading = false;
+        $("zara-send-btn").disabled = false;
+      }
+    }
+
+    /* ── Public API ── */
+    window.zaraToggle = function () {
+      panelOpen = !panelOpen;
+      $("zara-panel").classList.toggle("visible", panelOpen);
+      $("zara-bubble").classList.toggle("open", panelOpen);
+      $("zara-pill").style.display = panelOpen ? "none" : "";
+      if (panelOpen) { unreadCount = 0; setBadge(0); }
+    };
+
+    window.zaraStartChat = function () {
+      chatActive = true;
+      $("zara-start-btn").style.display = "none";
+      $("zara-input-row").classList.add("show");
+      $("zara-end-row").classList.add("show");
+      setStateBadge("Online", "#10b981");
+
+      const greeting = `Hello! Welcome to ${COMPANY}. I'm Zara, your virtual assistant. How may I help you today?`;
+      chatHistory = [];
+      chatHistory.push({ role: "assistant", content: greeting });
+      addMessage("assistant", greeting);
+      setTimeout(() => $("zara-input").focus(), 100);
+    };
+
+    window.zaraEndChat = function () {
+      const bye = `Thank you for reaching out to ${COMPANY}. Have a wonderful day! 🌟`;
+      addMessage("assistant", bye, true);
+      chatHistory = [];
+      chatActive = false;
+      $("zara-input-row").classList.remove("show");
+      $("zara-end-row").classList.remove("show");
+      $("zara-start-btn").style.display = "";
+      setStateBadge("Offline", "#6b7280");
+    };
+
+    window.zaraSend = function () {
+      const input = $("zara-input");
+      const text = input.value.trim();
+      if (!text || isLoading) return;
+      input.value = ""; input.style.height = "auto";
+      callZara(text);
+    };
+
+    window.zaraKeyDown = function (e) {
+      if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); zaraSend(); }
+    };
+
+    window.zaraAutoResize = function (el) {
+      el.style.height = "auto";
+      el.style.height = Math.min(el.scrollHeight, 90) + "px";
+    };
+
+    window.zaraQuickMsg = function (text) {
+      zaraStartChat();
+      setTimeout(() => callZara(text), 500);
+    };
+
+    /* Auto-open after 4s with teaser */
+    setTimeout(() => {
+      if (!panelOpen) {
+        unreadCount = 1; setBadge(1);
+      }
+    }, 4000);
+
+  })();
+  </script>
+
+  <!-- ════ END WIDGET ════ -->
+
+</body>
+</html>
